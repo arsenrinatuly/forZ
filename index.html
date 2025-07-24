@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Зере...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a0a;
+      font-family: 'Georgia', serif;
+      color: #ffdada;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+      margin: 20vh auto;
+      padding: 20px 70px;
+      background: rgba(0, 0, 0, 0.01);
+      backdrop-filter: blur(6px);
+      border-radius: 20px;
+      color: #ffdada;
+    }
+
+    .content h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #ff4f4f;
+    }
+
+    .content p {
+      font-size: 1.2rem;
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+
+    @media (max-width: 600px) {
+      .content {
+        margin: 5vh 10px;
+        padding: 15px;
+      }
+
+      .content h1 {
+        font-size: 2rem;
+      }
+
+      .content p {
+        font-size: 1rem;
+      }
+    }
+    .photo {
+  position: absolute;
+  top: 50%;
+  width: 160px;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  opacity: 0.95;
+  z-index: 1;
+}
+
+.left-photo {
+  left: 5%;
+  transform: translateY(-50%) rotate(-6deg);
+}
+
+.right-photo {
+  right: 5%;
+  transform: translateY(-50%) rotate(6deg);
+}
+@media (max-width: 600px) {
+  .photo {
+    width: 80px;
+    max-height: 120px;
+    top: auto;
+    bottom: 10px;
+    opacity: 0.92;
+    transform: rotate(0deg);
+  }
+
+  .left-photo {
+    left: 10px;
+    transform: rotate(-3deg);
+  }
+
+  .right-photo {
+    right: 10px;
+    transform: rotate(3deg);
+  }
+
+  .content {
+    margin: 5vh 12px;
+    padding: 12px;
+  }
+
+  .content h1 {
+    font-size: 1.8rem;
+  }
+
+  .content p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+}
+
+
+</style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <img src="left.jpg" alt="Photo Left" class="photo left-photo">
+  <img src="right.jpg" alt="Photo Right" class="photo right-photo">
+  <div class="content">
+    <h1>Зерешка</h1>
+    <p>
+      Тек сен туралы ғана ойлай берем күні түні
+      Қанша уақыт өтседе, сенімен ғана маған өте комфортно
+      Әр танысқан адаммен, сенімен салыстыратынмын
+      В итоге, все равно сені ұмыталмадым
+      Сені көрген сайын, сезімдерім ояна беретін 
+      Сеннен ғана мен шынайы махаббатты көрген
+      И сейчас, у меня те чувства как в первый раз мы общались.
+      «78:8» <3
+    </p>
+  </div>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height, particles = [];
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function heartPath(t) {
+      const scale = 18;
+      const x = 16 * Math.pow(Math.sin(t), 3);
+      const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t)
+              - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+      return {
+        x: width / 2 + x * scale,
+        y: height / 2 - y * scale
+      };
+    }
+
+    particles = [];
+    for (let t = 0; t < Math.PI * 2; t += 0.03) {
+      const pos = heartPath(t);
+      particles.push({
+        x: pos.x,
+        y: pos.y,
+        baseX: pos.x,
+        baseY: pos.y,
+        vx: Math.random() * 0.6 - 0.3,
+        vy: Math.random() * 0.6 - 0.3
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      // линии между частицами
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 50) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(255, 80, 80, ${1 - dist / 50})`;
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // сами частицы
+      for (let p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        const dx = p.x - p.baseX;
+        const dy = p.y - p.baseY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 20) {
+          p.vx *= -1;
+          p.vy *= -1;
+        }
+
+        ctx.beginPath();
+        ctx.fillStyle = '#ff3b3b';
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    requestAnimationFrame(animate);
+    }
+
+    animate();
+</script>
+</body>
+</html>
