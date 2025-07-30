@@ -5,184 +5,151 @@
   <title>Зере...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #0a0a0a;
-      font-family: 'Georgia', serif;
-      color: #ffdada;
+      width: 100%; height: 100%;
+      background: #0a0a0a; font-family: 'Georgia', serif; color: #ffdada;
     }
 
     canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 0;
+      position: fixed; top: 0; left: 0; z-index: 0;
     }
 
+    /* Контент */
     .content {
-      position: relative;
-      z-index: 1;
-      max-width: 700px;
-      margin: 20vh auto;
-      padding: 20px 70px;
-      background: rgba(0, 0, 0, 0.01);
-      backdrop-filter: blur(6px);
-      border-radius: 20px;
-      color: #ffdada;
+      position: relative; z-index: 2; max-width: 800px;
+      margin: 10vh auto 5vh auto; padding: 20px;
+      background: rgba(0, 0, 0, 0.1); backdrop-filter: blur(6px);
+      border-radius: 20px; text-align: center; animation: fadeIn 1.2s ease forwards;
+    }
+    .content h1 { font-size: 2.3rem; margin-bottom: 1rem; color: #ff4f4f; }
+    .content p { display: flex; flex-direction: column; gap: 6px; font-size: 1.1rem; line-height: 1.6; }
+    .content p span { display: inline-block; overflow: hidden; border-right: 2px solid #ff4f4f; white-space: nowrap; width: 0; animation: typing 2.5s steps(40, end) forwards; }
+    .content p span:nth-child(1) { animation-delay: 0s; }
+    .content p span:nth-child(2) { animation-delay: 2.6s; }
+    .content p span:nth-child(3) { animation-delay: 5.2s; }
+    .content p span:nth-child(4) { animation-delay: 7.8s; }
+    .content p span:nth-child(5) { animation-delay: 10.4s; }
+    .content p span:nth-child(6) { animation-delay: 13s; }
+    .content p span:nth-child(7) { animation-delay: 15.6s; }
+
+    @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+    @keyframes typing { from { width: 0 } to { width: 100% } }
+
+    /* Галерея */
+    .gallery {
+      position: relative; z-index: 2; max-width: 1000px; margin: 0 auto 5vh auto;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 14px; padding: 0 20px;
     }
 
-    .content h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      color: #ff4f4f;
-    }
-
-    .content p {
-      font-size: 1.2rem;
-      line-height: 1.7;
-      white-space: pre-line;
-    }
-
-    @media (max-width: 600px) {
-      .content {
-        margin: 5vh 10px;
-        padding: 15px;
-      }
-
-      .content h1 {
-        font-size: 2rem;
-      }
-
-      .content p {
-        font-size: 1rem;
-      }
-    }
+    .photo-card { display: flex; flex-direction: column; align-items: center; }
     .photo {
-  position: absolute;
-  top: 50%;
-  width: 160px;
-  max-height: 240px;
-  object-fit: cover;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-  transition: transform 0.4s ease, opacity 0.4s ease;
-  opacity: 0.95;
-  z-index: 1;
-}
+      width: 100%; height: 120px; object-fit: cover;
+      border-radius: 12px; cursor: pointer; border: 4px solid #fff; background: #fff;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: transform 0.3s ease;
+    }
+    .photo:hover { transform: scale(1.05); }
+    .caption {
+      margin-top: 6px; font-size: 0.9rem; color: #ffdada; text-align: center;
+    }
 
-.left-photo {
-  left: 5%;
-  transform: translateY(-50%) rotate(-6deg);
-}
+    /* Модалка */
+    .modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center;
+      flex-direction: column; z-index: 5; padding: 20px;
+    }
+    .modal.show { display: flex; }
+    .modal img {
+      max-width: 90%; max-height: 70%; border-radius: 12px;
+      border: 4px solid #fff; box-shadow: 0 0 25px rgba(0,0,0,0.8);
+    }
+    .modal .modal-caption {
+      margin-top: 12px; font-size: 1rem; color: #fff; text-align: center;
+    }
 
-.right-photo {
-  right: 5%;
-  transform: translateY(-50%) rotate(6deg);
-}
-@media (max-width: 600px) {
-  .photo {
-    width: 80px;
-    max-height: 120px;
-    top: auto;
-    bottom: 10px;
-    opacity: 0.92;
-    transform: rotate(0deg);
-  }
-
-  .left-photo {
-    left: 10px;
-    transform: rotate(-3deg);
-  }
-
-  .right-photo {
-    right: 10px;
-    transform: rotate(3deg);
-  }
-
-  .content {
-    margin: 5vh 12px;
-    padding: 12px;
-  }
-
-  .content h1 {
-    font-size: 1.8rem;
-  }
-
-  .content p {
-    font-size: 1rem;
-    line-height: 1.6;
-  }
-}
-
-
-</style>
+    /* Крестик и стрелки */
+    .close-btn, .arrow {
+      position: absolute; font-size: 2rem; color: #fff; cursor: pointer;
+      background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 6px;
+      transition: background 0.3s; z-index: 6;
+    }
+    .close-btn { top: 20px; right: 25px; font-size: 2.2rem; }
+    .close-btn:hover, .arrow:hover { background: rgba(255,255,255,0.3); }
+    .arrow { top: 50%; transform: translateY(-50%); font-size: 2.5rem; }
+    .arrow.left { left: 20px; }
+    .arrow.right { right: 20px; }
+  </style>
 </head>
 <body>
   <canvas id="canvas"></canvas>
-  <img src="left.jpg" alt="Photo Left" class="photo left-photo">
-  <img src="right.jpg" alt="Photo Right" class="photo right-photo">
+
   <div class="content">
     <h1>Зерешка</h1>
     <p>
-      Тек сен туралы ғана ойлай берем күні түні
-      Қанша уақыт өтседе, сенімен ғана маған өте комфортно
-      Әр танысқан адаммен, сенімен салыстыратынмын
-      В итоге, все равно сені ұмыталмадым
-      Сені көрген сайын, сезімдерім ояна беретін 
-      Сеннен ғана мен шынайы махаббатты көрген
-      И сейчас, у меня те чувства как в первый раз мы общались.
-      «78:8» <3
+      <span>Тек сен туралы ғана ойлай берем күні түні</span>
+      <span>Қанша уақыт өтседе, сенімен ғана маған өте комфортно</span>
+      <span>Әр танысқан адаммен, сенімен салыстыратынмын</span>
+      <span>В итоге, все равно сені ұмыталмадым</span>
+      <span>Сені көрген сайын, сезімдерім ояна беретін</span> 
+      <span>Сеннен ғана мен шынайы махаббатты көрген</span>
+      <span>И сейчас, у меня те чувства как в первый раз мы общались. «78:8» <3</span>
     </p>
   </div>
+
+  <!-- Галерея -->
+  <div class="gallery">
+    <div class="photo-card">
+      <img src="left.jpg" class="photo" data-caption="Фотка грязных кроссовок, но нам было пох">
+      <div class="caption">Фотка грязных кроссовок</div>
+    </div>
+    <div class="photo-card">
+      <img src="right.jpg" class="photo" data-caption="Первая совместная фотка с наших старых айфончиков">
+      <div class="caption">Первая совместная фотка</div>
+    </div>
+    <div class="photo-card">
+      <img src="3image.jpg" class="photo" data-caption="Пинтерест фото, кино ма?">
+      <div class="caption">Первое совместное 8 марта</div>
+    </div>
+    <div class="photo-card">
+      <img src="4image.jpg" class="photo" data-caption="Центральный парк">
+      <div class="caption">Первые времена когда фоткал тебя</div>
+    </div>
+  </div>
+
+  <!-- Модальное окно -->
+  <div class="modal" id="modal">
+    <span class="close-btn" id="close-btn">✕</span>
+    <span class="arrow left" id="prev">&#10094;</span>
+    <img id="modal-img" src="" alt="Big view">
+    <span class="arrow right" id="next">&#10095;</span>
+    <div class="modal-caption" id="modal-caption"></div>
+  </div>
+
   <script>
+    // Сердце
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
-
     let width, height, particles = [];
 
-    function resize() {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
+    function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
 
     function heartPath(t) {
       const scale = 18;
       const x = 16 * Math.pow(Math.sin(t), 3);
-      const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t)
-              - 2 * Math.cos(3 * t) - Math.cos(4 * t);
-      return {
-        x: width / 2 + x * scale,
-        y: height / 2 - y * scale
-      };
+      const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+      return { x: width / 2 + x * scale, y: height / 2 - y * scale };
     }
 
-    particles = [];
     for (let t = 0; t < Math.PI * 2; t += 0.03) {
       const pos = heartPath(t);
-      particles.push({
-        x: pos.x,
-        y: pos.y,
-        baseX: pos.x,
-        baseY: pos.y,
-        vx: Math.random() * 0.6 - 0.3,
-        vy: Math.random() * 0.6 - 0.3
-      });
+      particles.push({ x: pos.x, y: pos.y, baseX: pos.x, baseY: pos.y, vx: Math.random() * 0.6 - 0.3, vy: Math.random() * 0.6 - 0.3 });
     }
 
     function animate() {
       ctx.clearRect(0, 0, width, height);
-
-      // линии между частицами
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
@@ -198,31 +165,56 @@
           }
         }
       }
-
-      // сами частицы
       for (let p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-
-        const dx = p.x - p.baseX;
-        const dy = p.y - p.baseY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist > 20) {
-          p.vx *= -1;
-          p.vy *= -1;
-        }
-
-        ctx.beginPath();
-        ctx.fillStyle = '#ff3b3b';
-        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-        ctx.fill();
+        p.x += p.vx; p.y += p.vy;
+        const dx = p.x - p.baseX, dy = p.y - p.baseY;
+        if (Math.sqrt(dx * dx + dy * dy) > 20) { p.vx *= -1; p.vy *= -1; }
+        ctx.beginPath(); ctx.fillStyle = '#ff3b3b'; ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
+      }
+      requestAnimationFrame(animate);
     }
-
-    requestAnimationFrame(animate);
-    }
-
     animate();
-</script>
+
+    // Галерея + модалка
+    const photos = document.querySelectorAll('.photo');
+    const modal = document.getElementById('modal');
+    const modalImg = document.getElementById('modal-img');
+    const modalCaption = document.getElementById('modal-caption');
+    const closeBtn = document.getElementById('close-btn');
+    const nextBtn = document.getElementById('next');
+    const prevBtn = document.getElementById('prev');
+
+    let currentIndex = 0;
+
+    function openModal(index) {
+      currentIndex = index;
+      modalImg.src = photos[index].src;
+      modalCaption.innerText = photos[index].dataset.caption || '';
+      modal.classList.add('show');
+    }
+    function closeModal() { modal.classList.remove('show'); }
+    function nextPhoto() { currentIndex = (currentIndex + 1) % photos.length; openModal(currentIndex); }
+    function prevPhoto() { currentIndex = (currentIndex - 1 + photos.length) % photos.length; openModal(currentIndex); }
+
+    photos.forEach((photo, index) => {
+      photo.addEventListener('click', () => openModal(index));
+    });
+    closeBtn.addEventListener('click', closeModal);
+    nextBtn.addEventListener('click', nextPhoto);
+    prevBtn.addEventListener('click', prevPhoto);
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // Свайпы
+    let startX = 0;
+    modal.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; });
+    modal.addEventListener('touchend', (e) => {
+      const endX = e.changedTouches[0].clientX;
+      if (endX - startX > 50) prevPhoto();
+      if (startX - endX > 50) nextPhoto();
+    });
+  </script>
 </body>
 </html>
