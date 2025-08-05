@@ -3,28 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <title>Зере...</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     html, body {
-      width: 100%; height: 100%;
-      background: #0a0a0a; font-family: 'Georgia', serif; color: #ffdada;
+      width: 100%;
+      height: 100%;
+      background: #0a0a0a;
+      font-family: 'Georgia', serif;
+      color: #ffdada;
+      overflow-x: hidden;
     }
 
     canvas {
-      position: fixed; top: 0; left: 0; z-index: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
     }
 
-    /* Контент */
     .content {
-      position: relative; z-index: 2; max-width: 800px;
-      margin: 10vh auto 5vh auto; padding: 20px;
-      background: rgba(0, 0, 0, 0.1); backdrop-filter: blur(6px);
-      border-radius: 20px; text-align: center; animation: fadeIn 1.2s ease forwards;
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 800px;
+      margin: 40px auto 24px auto;
+      padding: 16px 18px;
+      background: rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(6px);
+      border-radius: 20px;
+      text-align: center;
+      animation: fadeIn 1.2s ease forwards;
     }
-    .content h1 { font-size: 2.3rem; margin-bottom: 1rem; color: #ff4f4f; }
-    .content p { display: flex; flex-direction: column; gap: 6px; font-size: 1.1rem; line-height: 1.6; }
-    .content p span { display: inline-block; overflow: hidden; border-right: 2px solid #ff4f4f; white-space: nowrap; width: 0; animation: typing 2.5s steps(40, end) forwards; }
+
+    .content h1 {
+      font-size: clamp(1.6rem, 5vw, 2.3rem);
+      margin-bottom: 1rem;
+      color: #ff4f4f;
+    }
+
+    .content p {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: clamp(1rem, 4.5vw, 1.2rem);
+      line-height: 1.6;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      padding-bottom: 10px;
+    }
+
+  .content p span {
+  display: block;
+  white-space: normal;
+  animation: fadeInText 1s ease forwards;
+  opacity: 0;
+  }
+
     .content p span:nth-child(1) { animation-delay: 0s; }
     .content p span:nth-child(2) { animation-delay: 2.6s; }
     .content p span:nth-child(3) { animation-delay: 5.2s; }
@@ -33,51 +73,123 @@
     .content p span:nth-child(6) { animation-delay: 13s; }
     .content p span:nth-child(7) { animation-delay: 15.6s; }
 
-    @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-    @keyframes typing { from { width: 0 } to { width: 100% } }
+    @keyframes fadeIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-    /* Галерея */
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+
+    @keyframes fadeInText {
+    to {
+    opacity: 1;
+    }
+    }  
+
     .gallery {
-      position: relative; z-index: 2; max-width: 1000px; margin: 0 auto 5vh auto;
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 14px; padding: 0 20px;
+      position: relative;
+      z-index: 2;
+      max-width: 1000px;
+      margin: 0 auto 5vh auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 14px;
+      padding: 0 20px;
     }
 
-    .photo-card { display: flex; flex-direction: column; align-items: center; }
+    .photo-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     .photo {
-      width: 100%; height: 120px; object-fit: cover;
-      border-radius: 12px; cursor: pointer; border: 4px solid #fff; background: #fff;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: transform 0.3s ease;
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 12px;
+      cursor: pointer;
+      border: 4px solid #fff;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease;
     }
-    .photo:hover { transform: scale(1.05); }
+
+    .photo:hover {
+      transform: scale(1.05);
+    }
+
     .caption {
-      margin-top: 6px; font-size: 0.9rem; color: #ffdada; text-align: center;
+      margin-top: 6px;
+      font-size: 0.9rem;
+      color: #ffdada;
+      text-align: center;
     }
 
-    /* Модалка */
     .modal {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center;
-      flex-direction: column; z-index: 5; padding: 20px;
-    }
-    .modal.show { display: flex; }
-    .modal img {
-      max-width: 90%; max-height: 70%; border-radius: 12px;
-      border: 4px solid #fff; box-shadow: 0 0 25px rgba(0,0,0,0.8);
-    }
-    .modal .modal-caption {
-      margin-top: 12px; font-size: 1rem; color: #fff; text-align: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 5;
+      padding: 20px;
     }
 
-    /* Крестик и стрелки */
-    .close-btn, .arrow {
-      position: absolute; font-size: 2rem; color: #fff; cursor: pointer;
-      background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 6px;
-      transition: background 0.3s; z-index: 6;
+    .modal.show {
+      display: flex;
     }
-    .close-btn { top: 20px; right: 25px; font-size: 2.2rem; }
-    .close-btn:hover, .arrow:hover { background: rgba(255,255,255,0.3); }
-    .arrow { top: 50%; transform: translateY(-50%); font-size: 2.5rem; }
+
+    .modal img {
+      max-width: 90%;
+      max-height: 70%;
+      border-radius: 12px;
+      border: 4px solid #fff;
+      box-shadow: 0 0 25px rgba(0,0,0,0.8);
+    }
+
+    .modal .modal-caption {
+      margin-top: 12px;
+      font-size: 1rem;
+      color: #fff;
+      text-align: center;
+    }
+
+    .close-btn, .arrow {
+      position: absolute;
+      font-size: 2rem;
+      color: #fff;
+      cursor: pointer;
+      background: rgba(255,255,255,0.1);
+      padding: 5px 12px;
+      border-radius: 6px;
+      transition: background 0.3s;
+      z-index: 6;
+    }
+
+    .close-btn {
+      top: 20px;
+      right: 25px;
+      font-size: 2.2rem;
+    }
+
+    .close-btn:hover, .arrow:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .arrow {
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2.5rem;
+    }
+
     .arrow.left { left: 20px; }
     .arrow.right { right: 20px; }
   </style>
@@ -98,7 +210,6 @@
     </p>
   </div>
 
-  <!-- Галерея -->
   <div class="gallery">
     <div class="photo-card">
       <img src="left.jpg" class="photo" data-caption="Фотка грязных кроссовок, но нам было пох">
@@ -116,9 +227,24 @@
       <img src="4image.jpg" class="photo" data-caption="Центральный парк">
       <div class="caption">Первые времена когда фоткал тебя</div>
     </div>
+    <div class="photo-card">
+      <img src="8image.jpg" class="photo" data-caption="Кол устасып жургенымыз))">
+      <div class="caption">Первая ночная гулянка после долгого перерыва</div>
+    </div>
+    <div class="photo-card">
+      <img src="7image.jpg" class="photo" data-caption="Нашиии  коныр коныр глазкииии">
+      <div class="caption">Глазочки</div>
+    </div>
+    <div class="photo-card">
+      <img src="6image.jpg" class="photo" data-caption="Типа пинтерест фото екеумыздын">
+      <div class="caption">Классная фоточка</div>
+    </div>
+    <div class="photo-card">
+      <img src="5image.jpg" class="photo" data-caption="Гулянка когда екеумыз косылдык">
+      <div class="caption">Наша милая фотка 03.08</div>
+    </div>
   </div>
 
-  <!-- Модальное окно -->
   <div class="modal" id="modal">
     <span class="close-btn" id="close-btn">✕</span>
     <span class="arrow left" id="prev">&#10094;</span>
@@ -128,13 +254,17 @@
   </div>
 
   <script>
-    // Сердце
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     let width, height, particles = [];
 
-    function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resize); resize();
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
 
     function heartPath(t) {
       const scale = 18;
@@ -165,17 +295,27 @@
           }
         }
       }
+
       for (let p of particles) {
-        p.x += p.vx; p.y += p.vy;
+        p.x += p.vx;
+        p.y += p.vy;
         const dx = p.x - p.baseX, dy = p.y - p.baseY;
-        if (Math.sqrt(dx * dx + dy * dy) > 20) { p.vx *= -1; p.vy *= -1; }
-        ctx.beginPath(); ctx.fillStyle = '#ff3b3b'; ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
+        if (Math.sqrt(dx * dx + dy * dy) > 20) {
+          p.vx *= -1;
+          p.vy *= -1;
+        }
+        ctx.beginPath();
+        ctx.fillStyle = '#ff3b3b';
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fill();
       }
+
       requestAnimationFrame(animate);
     }
+
     animate();
 
-    // Галерея + модалка
+    // Modal gallery logic
     const photos = document.querySelectorAll('.photo');
     const modal = document.getElementById('modal');
     const modalImg = document.getElementById('modal-img');
@@ -183,7 +323,6 @@
     const closeBtn = document.getElementById('close-btn');
     const nextBtn = document.getElementById('next');
     const prevBtn = document.getElementById('prev');
-
     let currentIndex = 0;
 
     function openModal(index) {
@@ -192,13 +331,25 @@
       modalCaption.innerText = photos[index].dataset.caption || '';
       modal.classList.add('show');
     }
-    function closeModal() { modal.classList.remove('show'); }
-    function nextPhoto() { currentIndex = (currentIndex + 1) % photos.length; openModal(currentIndex); }
-    function prevPhoto() { currentIndex = (currentIndex - 1 + photos.length) % photos.length; openModal(currentIndex); }
+
+    function closeModal() {
+      modal.classList.remove('show');
+    }
+
+    function nextPhoto() {
+      currentIndex = (currentIndex + 1) % photos.length;
+      openModal(currentIndex);
+    }
+
+    function prevPhoto() {
+      currentIndex = (currentIndex - 1 + photos.length) % photos.length;
+      openModal(currentIndex);
+    }
 
     photos.forEach((photo, index) => {
       photo.addEventListener('click', () => openModal(index));
     });
+
     closeBtn.addEventListener('click', closeModal);
     nextBtn.addEventListener('click', nextPhoto);
     prevBtn.addEventListener('click', prevPhoto);
@@ -207,9 +358,12 @@
       if (e.target === modal) closeModal();
     });
 
-    // Свайпы
+    // Swipe gestures
     let startX = 0;
-    modal.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; });
+    modal.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+    });
+
     modal.addEventListener('touchend', (e) => {
       const endX = e.changedTouches[0].clientX;
       if (endX - startX > 50) prevPhoto();
